@@ -46,17 +46,22 @@ def outlier(sample):
 
 def research(dist_type):
     values = []
+    variance = []
     for j in range(2):
         res = 0
         for i in range(0, TESTS_NUM):
             sample = np.sort(generate_dict[dist_type](100 - 80 * j))
             res += outlier(sample)
         values.append(res / TESTS_NUM)
+        varis = [outlier(np.sort(generate_dict[dist_type](100 - 80 * j))) for i in range(0, 1000)]
+        variance.append(np.var(varis))
     print(values)
     print(dist_type)
 
     print("n = 20", values[0])
+    print("D =", variance[0])
     print("n = 100", values[1])
+    print("D =", variance[1])
 
     data = []
     for i in range(2):
@@ -74,6 +79,6 @@ def research(dist_type):
 if __name__ == "__main__":
     # research('normal')
     # research('cauchy')
-    research('laplace')
+    # research('laplace')
     # research('uniform')
-    # research('poisson')
+    research('poisson')
