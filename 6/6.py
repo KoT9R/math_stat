@@ -47,12 +47,49 @@ def mnm(x, y):
     return x, y_hat
 
 
+def dist(a, b, x, y):
+    return np.abs(a * x - 1 * y + b) / np.sqrt(np.power(a, 2) + 1)
+
+
+def deviation(l, r, h, N):
+    mnk_sum_q, mnk_sum_q_per = 0, 0
+    mnm_sum_q, mnm_sum_q_per = 0, 0
+    x = 0
+    for i in range(0, N):
+        x, y = generate(l, r, h)
+        mnk_a, mnk_b = mnk(x, y)
+        mnm_a, mnm_b = mnm(x, y)
+
+        mnk_q = 1 / len(x) * np.sum(dist(mnk_a, mnk_b, x, y))
+        mnm_q = 1 / len(x) * np.sum(dist(mnm_a, mnm_b, x, y))
+
+        mnk_sum_q += mnk_q
+        mnm_sum_q += mnm_q
+
+        x, y = generate(l, r, h)
+        y = perturbation(y)
+        mnk_a, mnk_b = mnk(x, y)
+        mnm_a, mnm_b = mnm(x, y)
+
+        mnk_q_per = 1 / len(x) * np.sum(dist(mnk_a, mnk_b, x, y))
+        mnm_q_per = 1 / len(x) * np.sum(dist(mnm_a, mnm_b, x, y))
+
+        mnk_sum_q_per += mnk_q_per
+        mnm_sum_q_per += mnm_q_per
+
+    print("           mnm             mnk")
+    print("original ", mnm_sum_q / N, mnk_sum_q / N)
+    print("distorted", mnm_sum_q_per / N, mnk_sum_q_per / N)
+
+
 if __name__ == "__main__":
     l = -1.8
     r = 2
     h = 0.2
     a = 2
     b = 2
+
+    deviation(l, r, h, 1000)
 
     plt.figure()
     plt.subplot(121)
