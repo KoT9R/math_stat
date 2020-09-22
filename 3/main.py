@@ -33,6 +33,20 @@ def IQR(x):
     return np.abs(np.quantile(x, 1 / 4) - np.quantile(x, 3 / 4))
 
 
+# noq: 3
+def test(x: int, y):
+    z: float
+    k: float
+    k = 5
+    y: str = "a"
+    z = x + y
+    x: float = 1.2
+    while z < 4:
+        print(z)
+        z += 1
+    return x
+
+
 def outlier(sample):
     length = sample.size
     res = 0

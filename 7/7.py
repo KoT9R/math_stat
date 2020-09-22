@@ -2,7 +2,7 @@ import numpy as np
 from tabulate import tabulate
 import scipy.stats as stats
 
-start_border, end_border = -1.0, 1.0
+start_border, end_border = -2.0, 2.0
 sample_size = 100
 alpha = 0.05
 p = 1 - alpha
@@ -73,8 +73,56 @@ def buildTable(chi2, borders, probabilities, quantities):
     return tabulate(rows, headers)
 
 
+def kek():
+    distr = np.random.normal(0, 1, size=20)
+    mu_n = np.mean(distr)
+    sigma_n = np.std(distr)
+    print(np.around(mu_n, decimals=2), ' ', np.around(sigma_n, decimals=2))
+
+    alpha = 0.05
+    p = 1 - alpha
+    k = 7
+
+    limits = np.linspace(-2, 2, num=k - 1)
+    sample = stats.chi2.ppf(p, k - 1)
+    array = np.array([stats.norm.cdf(limits[0])])
+    quan_ar = np.array([len(distr[distr <= limits[0]])])
+    for i in range(0, len(limits) - 1):
+        new_ar = stats.norm.cdf(limits[i + 1]) - stats.norm.cdf(limits[i])
+        array = np.append(array, new_ar)
+        quan_ar = np.append(quan_ar, len(distr[(distr <= limits[i + 1]) & (distr >= limits[i])]))
+    array = np.append(array, 1 - stats.norm.cdf(limits[-1]))
+    quan_ar = np.append(quan_ar, len(distr[distr >= limits[-1]]))
+    result = np.divide(np.multiply((quan_ar - 20 * array), (quan_ar - 20 * array)), array * 20)
+
+    headers = ["i", "interval", "n_i", "p_i", "(n_i - np_i)^2/np_i"]
+    rows = []
+    for i in range(0, len(quan_ar)):
+        if i == 0:
+            boarders = ['-inf', np.around(limits[0], decimals=4)]
+        elif i == len(quan_ar) - 1:
+            boarders = [np.around(limits[-1], decimals=4), 'inf']
+        else:
+            boarders = [np.around(limits[i - 1], decimals=4), np.around(limits[i], decimals=4)]
+        rows.append(
+            [i + 1, boarders,
+            quan_ar[i],
+            np.around(array[i], decimals=4),
+            np.around(result[i], decimals=4)])
+    rows.append(["sum", "--",
+                 np.sum(quan_ar),
+                 np.around(np.sum(array), decimals=4),
+                 np.around(np.sum(result), decimals=4)])
+    print(tabulate(rows, headers))
+
+    print(len(quan_ar))
+    print('\n')
+
+
 if __name__ == '__main__':
     normal_sample = np.random.normal(0, 1, size=sample_size)
     mu_ml, sigma_ml = MLE(normal_sample)
     chi2, borders, probabilities, quantities = quantileChi2(normal_sample, mu_ml, sigma_ml)
     print(buildTable(chi2, borders, probabilities, quantities))
+
+    kek()
