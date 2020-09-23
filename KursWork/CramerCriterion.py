@@ -3,6 +3,7 @@ import numpy as np
 import random
 import scipy.stats as st
 import statistics
+import matplotlib.pyplot as plt
 
 n = 50
 mu = 0
@@ -34,7 +35,7 @@ def cramerVonMisesTest(x, mu_estimate, sigma_estimate):
     stat = -n - 2 * np.sum(I)
 
     for j in range(n):
-        print("%2s & " % str(j + 1),
+        print("%.2s & " % str(j + 1),
               "%s & " % str("%.3f" % A[j]),
               "%s & " % str("%.6f" % B[j]),
               "%s & " % str("%.5f" % C[j]),
@@ -52,6 +53,17 @@ def cramerVonMisesTest(x, mu_estimate, sigma_estimate):
 def main():
     x = np.random.normal(mu, sigma, n)
     x = np.sort(x)
+
+    count, bins, ignored = plt.hist(x, 30, density=True)
+    plt.xlabel("")
+    plt.ylabel("frequency")
+    plt.show()
+
+    for j in range(n):
+        print("%s &" % str(j + 1),
+              "%s \\\\" % x[j],
+              "\hline"
+              )
 
     mu_estimate = np.mean(x)
     sigma_estimate = math.sqrt(statistics.variance(x))
